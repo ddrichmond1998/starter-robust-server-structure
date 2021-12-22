@@ -44,13 +44,18 @@ let lastFlipId = flips.reduce((maxId, flip) => Math.max(maxId, flip.id), 0);
 
 app.post("/flips", (req, res, next) => {
   const { data: { result } = {} } = req.body;//standard destructuring syntax. 
+  if (result) {//added this if statement to check if the result is truthy.
   const newFlip = {
     id: ++lastFlipId, // Increment last ID, then assign as the current ID
     result,
   };
   flips.push(newFlip);
   counts[result] = counts[result] + 1; // Increment the counts (heads, tails or edge)
-  res.json({ data: newFlip }); //sends the new response to the client
+ // res.json({ data: newFlip }); sends the new response to the client
+ res.status(201).json({ data: newFlip });//sends the new response to the client with a status code of 201 when a successful post request is made.
+} else {//if the result is falsy, send a 400 error.
+   res.sendStatus(400);
+  }
 });
 
 // Not found handler
